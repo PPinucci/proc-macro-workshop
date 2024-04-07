@@ -64,8 +64,9 @@ pub fn derive(input: TokenStream) -> TokenStream {
         impl #builder_name {
 
             #(
-                pub fn #fields_names (&mut self, var : #fields_types ) {
-                    self.#fields_names = Some(var)
+                pub fn #fields_names (&mut self, var : #fields_types ) -> &mut Self {
+                    self.#fields_names = Some(var);
+                    self
                 }
 
             )*
