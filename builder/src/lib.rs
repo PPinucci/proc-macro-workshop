@@ -64,9 +64,27 @@ pub fn derive(input: TokenStream) -> TokenStream {
         impl #builder_name {
 
             #(
-                pub fn #fields_names (&mut self, var : #fields_types ) {}
+                pub fn #fields_names (&mut self, var : #fields_types ) {
+                    self.#fields_names = Some(var)
+                }
 
             )*
+
+            pub fn build(&mut self) -> std::result::Result<#input_name, std::boxed::Box<dyn std::error::Error>>{
+                #(
+                    let #fields_names;
+                    if let Some(thing) = &mut self.#fields_names {
+                        #fields_names = self.#fields_names.take().unwrap();
+                    } else {
+
+                        return std::result::Result::Err("not all fields instanciated".into())
+                    };
+            )*
+            return std::result::Result::Ok(
+                #input_name {
+                #(#fields_names),*
+            });
+            }
         }
     };
 
